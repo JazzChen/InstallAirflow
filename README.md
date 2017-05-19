@@ -37,8 +37,8 @@
   pip install redis  
   pip install -U "celery[redis]"  
   
-  初始化db  
-  airflow initdb
+  初始化db  
+  airflow initdb  
 
 ## 6、增加Web UI登录用户  
   (py2) [airflow@AIRFLOW airflow]$ ipython  
@@ -58,7 +58,8 @@
 ## 7、配置systemd来管理和监控airflow服务（start，stop，restart，status）  
      
   配置方法参考：https://github.com/apache/incubator-airflow/tree/master/scripts/systemd  
-  或https://github.com/JazzChen/InstallAirflow/tree/master/airflow/script/systemd  
+  或https://github.com/JazzChen/InstallAirflow/tree/master/airflow/script/systemd  
+  
   (py2) [airflow@AIRFLOW systemd]$ ls  
     
   airflow  airflow.conf  airflow-flower.service  airflow-kerberos.service  airflow-scheduler.service  airflow-webserver.service  airflow-worker.service  
