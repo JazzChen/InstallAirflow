@@ -28,7 +28,7 @@ dag = DAG('import_applog_mongodb', default_args=default_args, schedule_interval=
 esucc = EmailOperator(
     task_id='email_success_' + dag.dag_id,
     to=email_addr,
-    subject= dag.dag_id + ' [success] on ' + datetime.now().strftime('%Y-%m-%d'),
+    subject= dag.dag_id + ' [success] on {{ ds }} ',
     html_content='Congratulation!',
     trigger_rule='all_success',
     dag=dag)
@@ -36,17 +36,18 @@ esucc = EmailOperator(
 # add table here:
 tables = ['browser_history', 'account_list', 'event_ios', 'event_app', 'ios_deviceinfo', 'frequentlocation', 'coordinates', 'hardware', 'location', 'network', 'telephone', 'hardwareios']
 # copy table to bi
-bitables = ['hardware', 'hardwareios']
+#bitables = ['hardware', 'hardwareios']
+bitables = []
 
 for table in tables:
     imp = BashOperator(
         task_id='import_' + table,
-        bash_command='/disk1/etl/imp_mongo_doc_by_day.sh {table} > /disk1/etl/log/{table}.log '.format(table=table),
+        bash_command='/disk1/bdl/etl/ETL/imp_mongo_doc_with_date_input.sh {table} {begin} {end} > /disk1/bdl/etl/ETL/log/{table}.log '.format(table=table, begin='{{ ds }}', end='{{ tomorrow_ds }}'),
         dag=dag)
     if table in bitables:
         bimp = BashOperator(
             task_id = 'send_2_bi_' + table,
-            bash_command = '/disk1/etl/send_bi_impala_by_day.sh {table} > /disk1/etl/log/BI/{table}.log '.format(table=table),
+            bash_command = '/disk1/bdl/etl/ETL/send_bi_impala_with_date_input.sh {table} {begin} {end}  > /disk1/bdl/etl/ETL/log/BI/{table}.log '.format(table=table, begin='{{ ds }}', end='{{ tomorrow_ds }}'),
             dag=dag)
         bimp.set_upstream(imp)
         esucc.set_upstream(bimp)
@@ -55,6 +56,6 @@ for table in tables:
 
 imp_software = BashOperator(
     task_id = 'import_software',
-    bash_command = '/disk1/etl/imp_software_doc_by_day.sh > /disk1/etl/log/software.log ',
+    bash_command = '/disk1/bdl/etl/ETL/imp_software_doc_with_date_input.sh {{ ds }} {{ tomorrow_ds }} > /disk1/bdl/etl/ETL/log/software.log ',
     dag=dag)
 esucc.set_upstream(imp_software)
