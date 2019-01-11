@@ -8,7 +8,7 @@
 ## 2、安装mysql  
   mysql一般默认安装了  
   配置：  
-  创建数据库：airflow   
+  创建数据库：airflow   create database airflow default character set utf8mb4 collate utf8mb4_unicode_ci;
   创建用户并授权：airflow  
   GRANT all privileges on airflow.* TO 'airflow'@'localhost' IDENTIFIED BY 'airflow';  
     
